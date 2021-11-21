@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="upload-doc-aws-suite.xml" />
+	<munit:test name="post:\document:application\json:aws-sapi-config-test" doc:id="44e9379e-6280-492d-aa02-066862011c66" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Flow Reference" doc:id="9da7a2d7-7062-407c-88a0-fa66ff60b92c" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="a756eb4f-fc80-49f5-8df8-48846bd78de8" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java --- readUrl('classpath://postdocumentapplicationjsonawssapiconfigtest\mock_payload.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="bucketName" value="#[output application/json --- readUrl('classpath://postdocumentapplicationjsonawssapiconfigtest\mock_variable_.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="path" value="#[output application/json --- readUrl('classpath://postdocumentapplicationjsonawssapiconfigtest\mock_variable_1.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://postdocumentapplicationjsonawssapiconfigtest\mock_variable_2.dwl')]" />
+						<munit-tools:variable key="transactionId" value="#[output application/java --- readUrl('classpath://postdocumentapplicationjsonawssapiconfigtest\mock_variable_3.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Input" doc:id="90d6c506-3cd8-4f51-9636-4a07ef684a03">
+				<munit:payload value="#[output application/json --- readUrl('classpath://postdocumentapplicationjsonawssapiconfigtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://postdocumentapplicationjsonawssapiconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables>
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://postdocumentapplicationjsonawssapiconfigtest\set-event_variable_.dwl')]" />
+					<munit:variable key="transactionId" value="#[output application/java --- readUrl('classpath://postdocumentapplicationjsonawssapiconfigtest\set-event_variable_1.dwl')]" encoding="UTF-8" mediaType="application/java" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to post:\document:application\json:aws-sapi-config" doc:id="a766bdd5-c8ef-405c-883d-75dc3d47c3ab" name="post:\document:application\json:aws-sapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="07bc3ff7-39af-4d36-b462-6d514da9ee3c" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import * from dw::test::Asserts
+---
+payload must [notBeNull(),beObject(),$.code must equalTo(200), $.message must equalTo("Success"),$.description must equalTo("Document uploaded successfully"),$.transactionId must notBeNull(),(((($.dateTime as Date)-now()).hours) must equalTo(0))]]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="aws-sapi-main-test" doc:id="ffbaff9b-7ea4-4f5c-818d-14d3c7297716" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock APIkit Router" doc:id="5c3ebfcd-a070-49de-bf81-182ae9c64ed5" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="f1c3a6b5-ecbe-43a0-9656-7b8f6cf99c96" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://awssapimaintest\mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="bucketName" value="#[output application/json --- readUrl('classpath://awssapimaintest\mock_variable_.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="path" value="#[output application/json --- readUrl('classpath://awssapimaintest\mock_variable_1.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://awssapimaintest\mock_variable_2.dwl')]" />
+						<munit-tools:variable key="httpStatus" value="#[readUrl('classpath://awssapimaintest\mock_variable_3.dwl')]" />
+						<munit-tools:variable key="transactionId" value="#[output application/java --- readUrl('classpath://awssapimaintest\mock_variable_4.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Input" doc:id="472c3b42-2130-4705-bc34-b8e6e55b72ee">
+				<munit:payload value="#[output application/json --- readUrl('classpath://awssapimaintest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://awssapimaintest\set-event_attributes.dwl')]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to aws-sapi-main" doc:id="163bf993-412a-4d16-8141-7cec14d9567e" name="aws-sapi-main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="5cf156b4-d6f5-493b-bafc-1fd35493821f" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import awssapimaintest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="aws-s3-flow-test" doc:id="5fbfbc25-4367-497e-83fd-c248a0895ded" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Create object" doc:id="990a566a-2b31-474d-be3f-3347761443e8" processor="s3:create-object">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="22b56f96-cff1-4671-a5e2-dcfa9157e6d7" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java --- readUrl('classpath://awss3flowtest\mock_payload.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="bucketName" value="#[output application/json --- readUrl('classpath://awss3flowtest\mock_variable_.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="path" value="#[output application/json --- readUrl('classpath://awss3flowtest\mock_variable_1.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://awss3flowtest\mock_variable_2.dwl')]" />
+						<munit-tools:variable key="transactionId" value="#[output application/java --- readUrl('classpath://awss3flowtest\mock_variable_3.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Input" doc:id="184ff3e5-1b09-46d3-a96e-e15d6ed3b955">
+				<munit:payload value="#[output application/octet-stream --- readUrl('classpath://awss3flowtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/octet-stream" />
+				<munit:attributes value="#[readUrl('classpath://awss3flowtest\set-event_attributes.dwl')]" />
+				<munit:variables>
+					<munit:variable key="bucketName" value="#[output application/json --- readUrl('classpath://awss3flowtest\set-event_variable_.dwl')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="path" value="#[output application/json --- readUrl('classpath://awss3flowtest\set-event_variable_1.dwl')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://awss3flowtest\set-event_variable_2.dwl')]" />
+					<munit:variable key="transactionId" value="#[output application/java --- readUrl('classpath://awss3flowtest\set-event_variable_3.dwl')]" encoding="UTF-8" mediaType="application/java" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to aws-s3-flow" doc:id="7b219ae1-124e-4c6d-91fe-7b7627f151ee" name="aws-s3-flow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="5f0793e7-b2c9-40cd-82f1-10a74a0e3685" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import awss3flowtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+
+<munit:test name="post:\document:application\json:no_such_bucket-test" doc:id="4fbd6553-ad2d-4dd1-b092-896e5ad72693" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Flow Reference" doc:id="6a070002-80cd-46ef-87c5-242fa2cef7fb" processor="s3:create-object">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="22b56f96-cff1-4671-a5e2-dcfa9157e6d7" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java --- readUrl('classpath://postdocumentapplicationjsonawssapiconfigtest\mock_payload.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					<munit-tools:error typeId="S3:NO_SUCH_BUCKET" />
+					<munit-tools:variables >
+						<munit-tools:variable key="bucketName" value="#[output application/json --- readUrl('classpath://postdocumentapplicationjsonawssapiconfigtest\mock_variable_.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="path" value="#[output application/json --- readUrl('classpath://postdocumentapplicationjsonawssapiconfigtest\mock_variable_1.dwl')]" mediaType="application/json" encoding="UTF-8" />
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://postdocumentapplicationjsonawssapiconfigtest\mock_variable_2.dwl')]" />
+						<munit-tools:variable key="transactionId" value="#[output application/java --- readUrl('classpath://postdocumentapplicationjsonawssapiconfigtest\mock_variable_3.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Input" doc:id="050367b0-c231-4306-82c4-381f32a03d85">
+				<munit:payload value="#[output application/json --- readUrl('classpath://postdocumentapplicationjsonawssapiconfigtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://postdocumentapplicationjsonawssapiconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables>
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://postdocumentapplicationjsonawssapiconfigtest\set-event_variable_.dwl')]" />
+					<munit:variable key="transactionId" value="#[output application/java --- readUrl('classpath://postdocumentapplicationjsonawssapiconfigtest\set-event_variable_1.dwl')]" encoding="UTF-8" mediaType="application/java" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to post:\document:application\json:aws-sapi-config" doc:id="14cb29bd-7486-4978-abbd-5814ca8daba2" name="post:\document:application\json:aws-sapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="32be9e77-48be-446a-a96b-497097941184" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import * from dw::test::Asserts
+---
+payload must [
+	notBeNull(),
+	beObject(),
+	$.code must equalTo(500),
+	$.message must equalTo("Internal Server Error"),
+	$.transactionId must notBeNull(),
+	(((($.dateTime as Date)-now()).hours) must equalTo(0))
+]]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	
+</mule>

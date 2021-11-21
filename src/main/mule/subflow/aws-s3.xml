@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:s3="http://www.mulesoft.org/schema/mule/s3"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/s3 http://www.mulesoft.org/schema/mule/s3/current/mule-s3.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	
+	<sub-flow name="aws-s3-flow" doc:id="15f1f899-d2fa-49ac-aff0-9cff99228f30" >
+		<logger level="INFO" doc:name="Start Log" doc:id="0f2213d0-05ff-46c7-bb27-3208d0dfa734" message='transactionID: #[vars.transactionId]], message: "Before upload s3 call"'/>
+		<s3:create-object doc:name="Create object" doc:id="22b56f96-cff1-4671-a5e2-dcfa9157e6d7" config-ref="Amazon_S3_Configuration" bucketName="#[vars.bucketName]" key='#[vars.path]'>
+		</s3:create-object>
+		<ee:transform doc:name="Transform Message" doc:id="bc45d985-b3a4-40b2-9bfc-a2e40867fb45" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="End Log" doc:id="5a1d06de-5063-4f08-999d-772638febbfc" message='transactionID: #[vars.transactionId]], message: "After upload s3 call", payload: #[payload]'/>
+	</sub-flow>
+
+	</mule>

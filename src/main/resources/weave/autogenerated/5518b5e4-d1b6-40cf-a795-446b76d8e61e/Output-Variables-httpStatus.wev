@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_5518b5e4_d1b6_40cf_a795_446b76d8e61e_Output_Variables_httpStatus = Any
+

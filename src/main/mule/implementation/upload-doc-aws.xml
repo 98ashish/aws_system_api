@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="post:\document:application\json:aws-sapi-config">
+        <logger level="INFO" doc:name="Start Log" doc:id="f7744cff-ce3c-48f3-8cdf-68b347c3fa2e" message="transactionID: #[vars.transactionId]], message: Started document upload to s3 flow, payload: #[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="135f2aa8-2fd7-4f7a-a196-8c7eb39d4aea">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/octet-stream
+import fromBase64 from dw::core::Binaries
+---
+fromBase64(payload.document)
+]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="bucketName" ><![CDATA[payload.bucketName]]></ee:set-variable>
+				<ee:set-variable variableName="path" ><![CDATA[((payload.folderPath as String) ++ "/" ++ (payload.fileName as String))]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="a756eb4f-fc80-49f5-8df8-48846bd78de8" name="aws-s3-flow"/>
+		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: 200,
+  message: "Success",
+  description: "Document uploaded successfully",
+  dateTime: now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'" },
+  transactionId: vars.transactionId
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+		<logger level="INFO" doc:name="End Log" doc:id="2e515950-4d87-4b8d-94e9-32193191b3a3" message="transactionID: #[vars.transactionId]], message: Ended document upload to s3 flow, payload: #[payload]"/>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="7c31e4cb-5609-44d8-81ba-3620bcd466a3" >
+				<ee:transform doc:name="Transform Message" doc:id="c91e9fc7-c328-447a-9c44-70d11f06b3a5" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  code: 500,
+  message: "Internal Server Error",
+  description: error.description,
+  dateTime: now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'" },
+  transactionId: vars.transactionId
+}
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<flow-ref doc:name="Flow Reference" doc:id="82e44133-38fa-4c87-82ee-f0d0f39f7fe3" name="global_error_handlerSub_Flow"/>
+			</on-error-continue>
+		</error-handler>
+    
+</flow>
+	</mule>
